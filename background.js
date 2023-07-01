@@ -127,19 +127,21 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         });
 
         await browser.tabs.query({}).then(async function (tabs) {
-            let limit = 2000;
-            for (const tab of tabs) {
-                if (limit-- === 0) break;
-                let host = new URL(tab.url);
-                let host_str = ColoredTabs.sanitizeHostStr(host.hostname.toString());
-
-                if (tab.id % 10 === 0) {
-                    console.log('colorize tab id ' + tab.id + ' host ' + host_str);
-                }
-                await ColoredTabs.colorizeTab(tab.id, host_str);
-                host = null;
-                host_str = null;
-            }
+            await ColoredTabs.colorizeTabMass(tabs);
+            // let limit = 2000;
+            // for (const tab of tabs) {
+            //     if (limit-- === 0) break;
+            //     let host = new URL(tab.url);
+            //     let host_str = ColoredTabs.sanitizeHostStr(host.hostname.toString());
+            //
+            //     if (tab.id % 10 === 0) {
+            //         console.log('colorize tab id ' + tab.id + ' host ' + host_str);
+            //     }
+            //     await ColoredTabs.colorizeTab(tab.id, host_str);
+            //     host = null;
+            //     host_str = null;
+            // }
+            //
             console.log('Finished coloring');
         }, onError);
     },
@@ -167,10 +169,15 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             }
         } else {
             // calculate hue color for host
-            tabClass = 'coloredTabsHue' + Math.round((ColoredTabs.hash(host) % ColoredTabs.settings.colors) * (360 / ColoredTabs.settings.colors));
+            const host_color = ColoredTabs.getColorForHost(host);
+            tabClass = 'coloredTabsHue' + host_color;
         }
         ColoredTabs.state.cache_host_tabclass.set(host, tabClass);
         return tabClass;
+    },
+
+    getColorForHost(host) {
+        return Math.round((ColoredTabs.hash(host) % ColoredTabs.settings.colors) * (360 / ColoredTabs.settings.colors));
     },
 
     async colorizeTab(tabId, host) {
@@ -186,7 +193,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
                 tabs: [tabId],
                 state: tabClass,
             });
-            // send this message, if this is the first time
+            // send this message, if this is not the first time
             if (typeof ColoredTabs.state.tabsClass[tabId] !== undefined) {
                 await browser.runtime.sendMessage(TST_ID, {
                     type: 'remove-tab-state',
@@ -195,6 +202,45 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
                 });
             }
             ColoredTabs.state.tabsClass[tabId] = tabClass;
+        }
+    },
+
+    async colorizeTabMass(tabs) {
+        let color_to_tabs = new Map();
+        for (let i = 0; i < 360; i++) {
+            color_to_tabs.set(i, []);
+        }
+
+        console.log('colors to tabs', color_to_tabs);
+
+        for (const tab of tabs) {
+            const url = new URL(tab.url);
+            let host = ColoredTabs.sanitizeHostStr(url.hostname.toString());
+            let hostColor = ColoredTabs.getColorForHost(host);
+            const current = color_to_tabs.get(hostColor);
+            current.push(tab.id);
+            console.log('current', current);
+        }
+        console.log('colors to tabs', color_to_tabs);
+
+        // change color class, if it is different from the last set (including not set)
+        for (let color = 0; color < 360; color++) {
+            if (color_to_tabs.get(color).length === 0){
+                continue;
+            }
+            console.log('Sending color tabs:', color, color_to_tabs.get(color));
+            let tabClass = 'coloredTabsHue' + color;
+            await browser.runtime.sendMessage(TST_ID, {
+                type: 'add-tab-state',
+                tabs: color_to_tabs.get(color),
+                state: tabClass,
+            });
+            // send this message, if this is not the first time
+            // await browser.runtime.sendMessage(TST_ID, {
+            //     type: 'remove-tab-state',
+            //     tabs: color_to_tabs[color],
+            //     state: ColoredTabs.state.tabsClass[tabId],
+            // });
         }
     },
 
