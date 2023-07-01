@@ -180,14 +180,19 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         }
     },
 
-    hash(s) {
+    hash(_s) {
+        if (typeof _s !== 'string') {
+            return 0;
+        }
+        const s = _s.slice(0, 100);
         const cached_value = ColoredTabs.state.hash.get(s);
         if (cached_value !== undefined) {
             return cached_value;
         }
         let h = 0;
-        for (let i = 0, h = 1; i < s.length; i++)
+        for (let i = 0, h = 1; i < s.length; i++) {
             h = Math.imul(h + s.charCodeAt(i) | 0, 2654435761);
+        }
         const result = (h ^ h >>> 17) >>> 0;
         ColoredTabs.state.hash.set(s, cached_value);
         return result;
