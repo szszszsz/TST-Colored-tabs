@@ -135,9 +135,9 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
                     host_str = "unknown"
                 }
                 if (tab.id % 10 === 0) {
-                    console.log('colorize tab id ' + tab.id + ' host ' + host);
+                    console.log('colorize tab id ' + tab.id + ' host ' + host_str);
                 }
-                ColoredTabs.colorizeTab(tab.id, host);
+                ColoredTabs.colorizeTab(tab.id, host_str);
                 host = null;
                 host_str = null;
             }
