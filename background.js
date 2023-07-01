@@ -126,7 +126,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             style: css,
         });
 
-        await browser.tabs.query({}).then(function (tabs) {
+        await browser.tabs.query({}).then(async function (tabs) {
             let limit = 100;
             for (const tab of tabs) {
                 if (limit-- === 0) break;
