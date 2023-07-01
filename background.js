@@ -79,7 +79,7 @@ let ColoredTabs = {
 //       ColoredTabs.colorizeTab(tab.id, host);
 //     },
 
-    checkTabChanges(tabId, changeInfo, tab) {
+    async checkTabChanges(tabId, changeInfo, tab) {
         console.log("checkTabChanges tab id " + tabId + " tab url " + tab.url);
         console.log(changeInfo);
         if (typeof changeInfo.url === 'undefined' || tab.url.indexOf('about:') === 0)
@@ -89,7 +89,7 @@ let ColoredTabs = {
         host = ColoredTabs.sanitizeHostStr(host);
         if (host !== ColoredTabs.state.tabsHost[tabId]) {
             ColoredTabs.state.tabsHost[tabId] = host;
-            ColoredTabs.colorizeTab(tabId, host);
+            await ColoredTabs.colorizeTab(tabId, host);
         }
     },
     removeTabInfo(tabId, removeInfo) {
@@ -138,7 +138,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
                 if (tab.id % 10 === 0) {
                     console.log('colorize tab id ' + tab.id + ' host ' + host_str);
                 }
-                ColoredTabs.colorizeTab(tab.id, host_str);
+                await ColoredTabs.colorizeTab(tab.id, host_str);
                 host = null;
                 host_str = null;
             }
@@ -176,20 +176,20 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
     },
 
     // TODO can be async
-    colorizeTab(tabId, host) {
+    async colorizeTab(tabId, host) {
         let tabClass = this.getTabClass(host);
 
         // console.log("colorizeTab tabId " + tabId + ", host " + host + " hash " + ColoredTabs.hash(host) + " step " + (ColoredTabs.hash(host) % ColoredTabs.settings.colors) + " tabClass " + tabClass);
 
         // FIXME why sending here two commands one after another, adding, and removing state?
         if (ColoredTabs.state.tabsClass[tabId] !== tabClass) {
-            browser.runtime.sendMessage(TST_ID, {
+            await browser.runtime.sendMessage(TST_ID, {
                 type: 'add-tab-state',
                 tabs: [tabId],
                 state: tabClass,
             });
             if (typeof ColoredTabs.state.tabsClass[tabId] !== undefined) {
-                browser.runtime.sendMessage(TST_ID, {
+                await browser.runtime.sendMessage(TST_ID, {
                     type: 'remove-tab-state',
                     tabs: [tabId],
                     state: ColoredTabs.state.tabsClass[tabId],
