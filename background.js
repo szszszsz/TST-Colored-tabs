@@ -127,11 +127,16 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         await browser.tabs.query({}).then(function (tabs) {
             for (const tab of tabs) {
                 let host = new URL(tab.url);
-                host = host.hostname.toString();
+                let host_str = host.hostname.toString();
+                if (host_str === undefined || host_str.length === 0) {
+                    host_str = "unknown"
+                }
                 console.log('colorize tab id ' + tab.id + ' host ' + host);
                 ColoredTabs.colorizeTab(tab.id, host);
                 host = null;
+                host_str = null;
             }
+            console.log('Finished coloring');
         }, onError);
     },
 
