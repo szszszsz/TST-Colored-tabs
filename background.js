@@ -131,10 +131,8 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             for (const tab of tabs) {
                 if (limit-- === 0) break;
                 let host = new URL(tab.url);
-                let host_str = host.hostname.toString();
-                if (host_str === undefined || host_str.length === 0) {
-                    host_str = "unknown"
-                }
+                let host_str = ColoredTabs.sanitizeHostStr(host.hostname.toString());
+
                 if (tab.id % 10 === 0) {
                     console.log('colorize tab id ' + tab.id + ' host ' + host_str);
                 }
@@ -199,11 +197,14 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         }
     },
 
-    sanitizeHostStr(_s) {
-        if (typeof _s !== 'string' || tab.url.indexOf('about:') === 0) {
+    sanitizeHostStr(s) {
+        if (typeof s !== 'string' || s.indexOf('about:') === 0) {
+            console.warn("broken host string:", s)
             return "unknown";
         }
-        return _s.slice(0, 100);
+        const final = s.slice(0, 100);
+        console.log("sanitization result", s, final);
+        return final;
     },
 
     hash(_s) {
