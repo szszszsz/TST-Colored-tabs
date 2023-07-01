@@ -218,7 +218,8 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             h = Math.imul(h + s.charCodeAt(i) | 0, 2654435761);
         }
         const result = (h ^ h >>> 17) >>> 0;
-        ColoredTabs.state.hash.set(s, cached_value);
+        ColoredTabs.state.hash.set(s, result);
+        console.log('Calculating color for host', s, result)
         return result;
     },
 
