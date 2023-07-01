@@ -249,9 +249,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             console.warn("broken host string:", s)
             return "unknown";
         }
-        const final = s.slice(0, 100);
-        // console.log("sanitization result", s, final);
-        return final;
+        return s.slice(0, 100);
     },
 
     hash(_s) {
