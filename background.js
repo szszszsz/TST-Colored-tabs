@@ -173,19 +173,20 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         return tabClass;
     },
 
-    // TODO can be async
     async colorizeTab(tabId, host) {
         let tabClass = this.getTabClass(host);
 
         // console.log("colorizeTab tabId " + tabId + ", host " + host + " hash " + ColoredTabs.hash(host) + " step " + (ColoredTabs.hash(host) % ColoredTabs.settings.colors) + " tabClass " + tabClass);
 
         // FIXME why sending here two commands one after another, adding, and removing state?
+        // change color class, if it is different than last set (including not set)
         if (ColoredTabs.state.tabsClass[tabId] !== tabClass) {
             await browser.runtime.sendMessage(TST_ID, {
                 type: 'add-tab-state',
                 tabs: [tabId],
                 state: tabClass,
             });
+            // send this message, if this is the first time
             if (typeof ColoredTabs.state.tabsClass[tabId] !== undefined) {
                 await browser.runtime.sendMessage(TST_ID, {
                     type: 'remove-tab-state',
