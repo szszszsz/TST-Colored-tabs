@@ -126,13 +126,17 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         });
 
         await browser.tabs.query({}).then(function (tabs) {
+            let limit = 100;
             for (const tab of tabs) {
+                if (limit-- === 0) break;
                 let host = new URL(tab.url);
                 let host_str = host.hostname.toString();
                 if (host_str === undefined || host_str.length === 0) {
                     host_str = "unknown"
                 }
-                console.log('colorize tab id ' + tab.id + ' host ' + host);
+                if (tab.id % 10 === 0) {
+                    console.log('colorize tab id ' + tab.id + ' host ' + host);
+                }
                 ColoredTabs.colorizeTab(tab.id, host);
                 host = null;
                 host_str = null;
