@@ -31,7 +31,6 @@ let ColoredTabs = {
                 'tabsHost': [],
                 'tabsClass': [],
                 'inited': false,
-                // 'hash': {},
                 'hash': new Map(),
                 'cache_host_tabclass': new Map(),
             };
@@ -88,6 +87,7 @@ let ColoredTabs = {
         let host = _host.hostname.toString();
         host = ColoredTabs.sanitizeHostStr(host);
         if (host !== ColoredTabs.state.tabsHost[tabId]) {
+            // if host has changed, redo the coloring
             ColoredTabs.state.tabsHost[tabId] = host;
             await ColoredTabs.colorizeTab(tabId, host);
         }
