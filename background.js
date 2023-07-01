@@ -249,6 +249,7 @@ async function handleTSTMessage(message, sender) {
         case "ready":
             // TODO worth trying again after a couple of seconds?
             await registerToTST();
+            console.log('Got Ready, calling init');
             ColoredTabs.init();
             break;
         case "sidebar-show":
@@ -261,6 +262,9 @@ async function handleTSTMessage(message, sender) {
                 console.log('ColoredTabs already inited, so call colorizeAllTabs');
                 await ColoredTabs.colorizeAllTabs();
             }
+            break;
+        default:
+            console.log('Unhandled message: ', message);
             break;
     }
 }
