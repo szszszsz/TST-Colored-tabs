@@ -1,0 +1,5 @@
+background.js
+manifest.json
+options.html
+options.js
+sanitizer.js
