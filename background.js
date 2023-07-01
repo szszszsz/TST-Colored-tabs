@@ -84,8 +84,9 @@ let ColoredTabs = {
         console.log(changeInfo);
         if (typeof changeInfo.url === 'undefined' || tab.url.indexOf('about:') === 0)
             return;
-        let host = new URL(changeInfo.url);
-        host = host.hostname.toString();
+        const _host = new URL(changeInfo.url);
+        let host = _host.hostname.toString();
+        host = ColoredTabs.sanitizeHostStr(host);
         if (host !== ColoredTabs.state.tabsHost[tabId]) {
             ColoredTabs.state.tabsHost[tabId] = host;
             ColoredTabs.colorizeTab(tabId, host);
@@ -146,10 +147,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
     },
 
     getTabClass(_host) {
-        if (typeof _host !== 'string') {
-            _host = "unknown";
-        }
-        const host = _host.slice(0, 100);
+        const host = ColoredTabs.sanitizeHostStr(_host);
 
         const cached_value = ColoredTabs.state.cache_host_tabclass.get(host);
         if (cached_value !== undefined) {
@@ -201,11 +199,15 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         }
     },
 
-    hash(_s) {
-        if (typeof _s !== 'string') {
-            return 0;
+    sanitizeHostStr(_s) {
+        if (typeof _s !== 'string' || tab.url.indexOf('about:') === 0) {
+            return "unknown";
         }
-        const s = _s.slice(0, 100);
+        return _s.slice(0, 100);
+    },
+
+    hash(_s) {
+        const s = ColoredTabs.sanitizeHostStr(_s)
         const cached_value = ColoredTabs.state.hash.get(s);
         if (cached_value !== undefined) {
             return cached_value;
