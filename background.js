@@ -204,7 +204,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             return "unknown";
         }
         const final = s.slice(0, 100);
-        console.log("sanitization result", s, final);
+        // console.log("sanitization result", s, final);
         return final;
     },
 
@@ -220,7 +220,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         }
         const result = (h ^ h >>> 17) >>> 0;
         ColoredTabs.state.hash.set(s, result);
-        console.log('Calculating color for host', s, result)
+        // console.log('Calculating color for host', s, result)
         return result;
     },
 
