@@ -127,7 +127,7 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         });
 
         await browser.tabs.query({}).then(async function (tabs) {
-            let limit = 100;
+            let limit = 2000;
             for (const tab of tabs) {
                 if (limit-- === 0) break;
                 let host = new URL(tab.url);
