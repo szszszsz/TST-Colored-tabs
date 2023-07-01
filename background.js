@@ -33,6 +33,7 @@ let ColoredTabs = {
                 'inited': false,
                 // 'hash': {},
                 'hash': new Map(),
+                'cache_host_tabclass': new Map(),
             };
             // console.log(ColoredTabs.settings);
 
@@ -140,10 +141,19 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         }, onError);
     },
 
-    // TODO can be async
-    colorizeTab(tabId, host) {
-        let tabClass = null;
+    getTabClass(_host) {
+        if (typeof _host !== 'string') {
+            _host = "unknown";
+        }
+        const host = _host.slice(0, 100);
+
+        const cached_value = ColoredTabs.state.cache_host_tabclass.get(host);
+        if (cached_value !== undefined) {
+            return cached_value;
+        }
+
         let index = null;
+        let tabClass;
         if ((ColoredTabs.state.hostsMatch !== undefined) && (index = ColoredTabs.state.hostsMatch.indexOf(host) > -1)) {
             // if there is a host-color relation specified
             tabClass = 'coloredTabsHostMatch' + ColoredTabs.state.hostsMatch.indexOf(host);
@@ -159,6 +169,13 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
             // calculate hue color for host
             tabClass = 'coloredTabsHue' + Math.round((ColoredTabs.hash(host) % ColoredTabs.settings.colors) * (360 / ColoredTabs.settings.colors));
         }
+        ColoredTabs.state.cache_host_tabclass.set(host, tabClass);
+        return tabClass;
+    },
+
+    // TODO can be async
+    colorizeTab(tabId, host) {
+        let tabClass = this.getTabClass(host);
 
         // console.log("colorizeTab tabId " + tabId + ", host " + host + " hash " + ColoredTabs.hash(host) + " step " + (ColoredTabs.hash(host) % ColoredTabs.settings.colors) + " tabClass " + tabClass);
 
