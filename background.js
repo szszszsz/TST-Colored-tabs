@@ -214,8 +214,8 @@ tab-item tab-item-substance:hover {filter: saturate(` + ColoredTabs.settings.hov
         if (cached_value !== undefined) {
             return cached_value;
         }
-        let h = 0;
-        for (let i = 0, h = 1; i < s.length; i++) {
+        let h = 0, i = 0;
+        for (i = 0, h = 1; i < s.length; i++) {
             h = Math.imul(h + s.charCodeAt(i) | 0, 2654435761);
         }
         const result = (h ^ h >>> 17) >>> 0;
